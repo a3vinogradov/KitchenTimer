@@ -1,5 +1,29 @@
 #include "CDisplay.h"
 
+void PrintData(CDisplayData* pData, String lable)
+{
+    Serial.print(lable);
+    Serial.println(" - Data {");
+    Serial.print("  displayMode = "); Serial.print(pData->displayMode); Serial.println(";");
+    Serial.print("  secondVal = "); Serial.print(pData->secondVal); Serial.println(";");
+    Serial.print("  minuteVal = "); Serial.print(pData->minuteVal); Serial.println(";");
+    Serial.print("  symbol = {"); 
+    Serial.print(pData->symbol[3]);Serial.print(";");
+    Serial.print(pData->symbol[2]);Serial.print(";");
+    Serial.print(pData->symbol[1]);Serial.print(";");
+    Serial.print(pData->symbol[0]);Serial.println("}");
+    Serial.println("}");
+}
+void CopyData(CDisplayData* src, CDisplayData* dst)
+{
+  dst->displayMode = src->displayMode;
+  dst->secondVal = src->secondVal;
+  dst->minuteVal = src->minuteVal;
+  dst->symbol[0] = src->symbol[0];
+  dst->symbol[1] = src->symbol[1];
+  dst->symbol[2] = src->symbol[2];
+  dst->symbol[3] = src->symbol[3];
+}
 
 CDisplay::CDisplay(const byte CS, const byte DI, const byte CLK): 
   //_QD(2, 5, 3)
@@ -18,6 +42,8 @@ void CDisplay::SetString(const byte sym3, const byte sym2, const byte sym1, cons
   _newData.symbol[2] = sym2;
   _newData.symbol[1] = sym1;
   _newData.symbol[0] = sym0;
+  Serial.println("========== SetString ===========");
+  PrintData(&_newData, "NewData");
 };
 
 void CDisplay::SetSeconds(const byte value)
@@ -60,14 +86,19 @@ bool CDisplay::CheckUpdate()
   return (_currentData.displayMode != _newData.displayMode) ||
          (_currentData.secondVal != _newData.secondVal) ||
          (_currentData.minuteVal != _newData.minuteVal) ||
-         (_currentData.symbol != _newData.symbol) ;
+         (_currentData.symbol[0] != _newData.symbol[0]) ||
+         (_currentData.symbol[1] != _newData.symbol[1]) ||
+         (_currentData.symbol[2] != _newData.symbol[2]) ||
+         (_currentData.symbol[3] != _newData.symbol[3]) ;
 }
 
 void CDisplay::Refresh()
 {
   if (CheckUpdate())
   {
-    _currentData = _newData;
+    PrintData(&_currentData, "CurrentData");   
+    PrintData(&_newData, "NewData");   
+    CopyData(&_newData,&_currentData);
     _QD.displayDigits(_currentData.symbol[3], _currentData.symbol[2], _currentData.symbol[1], _currentData.symbol[0]);
   }
 }
@@ -85,7 +116,10 @@ void CDisplay::Exec()
 {
   switch(_currentData.displayMode)
   {
-    case MODE_STRING:  break;
+    case MODE_STRING:  
+      //_blinkState = false;
+      //Serial.println("ModeString.Exec");
+      break;
     case MODE_SET_MINUTE: 
       if(millis()-_lastTime >= _period)
       {
