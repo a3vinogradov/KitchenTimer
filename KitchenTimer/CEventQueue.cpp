@@ -27,12 +27,12 @@ void CEventQueue::Push(Event value)
   {
     _event = value;
     _size = 1;
-    Serial.println("====== QueuePush ==========");
-    Serial.print("{"); 
-    Serial.print(byte(value.Type)); 
-    Serial.print(", "); 
-    Serial.print(value.id); 
-    Serial.println("}");
+//    Serial.println("====== QueuePush ==========");
+//    Serial.print("{"); 
+//    Serial.print(byte(value.Type)); 
+//    Serial.print(", "); 
+//    Serial.print(value.id); 
+//    Serial.println("}");
   }
 }
 

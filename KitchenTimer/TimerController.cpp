@@ -73,6 +73,36 @@ void CTimerController::SetStateON()
   _eventQueue->Clear();
 }
 
+void CTimerController::IncSeconds(int value)
+{
+  long SS = GetSeconds();
+  SS+=value;
+  while(SS<0) 
+  {
+    SS+=60;
+  }
+  while(SS>=60) 
+  {
+    SS-=60;
+  }
+  _time= _time+(SS-(long)GetSeconds())*1000;
+}
+
+void CTimerController::IncMinutes(int value)
+{
+  long MM = GetMinutes();
+  MM+=value;
+  while(MM<0) 
+  {
+    MM+=100;
+  }
+  while(MM>=100) 
+  {
+    MM-=100;
+  }
+  _time= _time+(MM-(long)GetMinutes())*60000;
+}
+
 
 void CTimerController::Setup()
 {
@@ -115,6 +145,12 @@ void CTimerController::Exec()
             SetStateOFF();
           }
         }
+        else if (event.Type == EventType::EncoderChange)
+        {
+          //_time += (event.value*1000);
+          IncSeconds(event.value);
+          _display->SetTime(GetMinutes(),GetSeconds(),MODE_SET_SECOND);
+        }
       }      
       break;
     
@@ -138,6 +174,12 @@ void CTimerController::Exec()
           {
             SetStateSetSecond();
           }
+        }
+        else if (event.Type == EventType::EncoderChange)
+        {
+          //_time += (event.value*1000);
+          IncMinutes(event.value);
+          _display->SetTime(GetMinutes(),GetSeconds(),MODE_SET_MINUTE);
         }
       } 
       break;

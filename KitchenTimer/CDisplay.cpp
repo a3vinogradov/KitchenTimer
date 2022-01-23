@@ -56,6 +56,7 @@ void CDisplay::SetMinutes(const byte value)
 
 void CDisplay::SetTime(const byte valueMin, const byte valueSec, const byte mode)
 {
+  //Serial.println("SetTime; mode="+String(mode)+", curMode="+String(_currentData.displayMode));
   if (_currentData.displayMode != mode){
     _newData.displayMode = mode;
     if( (mode == MODE_TIMER_ON) ||
@@ -175,7 +176,7 @@ void CDisplay::Exec()
       {
         _lastTime += _period;
         _blinkState = !_blinkState;
-        Serial.println("blink = "+String(_blinkState));
+        //Serial.println("blink = "+String(_blinkState));
         if (_blinkState)
         {
           _newData.symbol[1] &= QD_DOT;

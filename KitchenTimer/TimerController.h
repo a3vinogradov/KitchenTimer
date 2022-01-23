@@ -29,6 +29,8 @@ class CTimerController
     void SetStateSetMinute();
     void SetStatePause();
     void SetStateON();
+    void IncSeconds(int value);
+    void IncMinutes(int value);
 
   public:
     CTimerController(CDisplay* disp, CEventQueue* queue);
