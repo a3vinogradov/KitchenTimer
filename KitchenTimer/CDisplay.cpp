@@ -2,17 +2,18 @@
 
 void PrintData(CDisplayData* pData, String lable)
 {
-    Serial.print(lable);
-    Serial.println(" - Data {");
-    Serial.print("  displayMode = "); Serial.print(pData->displayMode); Serial.println(";");
-    Serial.print("  secondVal = "); Serial.print(pData->secondVal); Serial.println(";");
-    Serial.print("  minuteVal = "); Serial.print(pData->minuteVal); Serial.println(";");
-    Serial.print("  symbol = {"); 
-    Serial.print(pData->symbol[3]);Serial.print(";");
-    Serial.print(pData->symbol[2]);Serial.print(";");
-    Serial.print(pData->symbol[1]);Serial.print(";");
-    Serial.print(pData->symbol[0]);Serial.println("}");
-    Serial.println("}");
+    return;
+//    Serial.print(lable);
+//    Serial.println(" - Data {");
+//    Serial.print("  displayMode = "); Serial.print(pData->displayMode); Serial.println(";");
+//    Serial.print("  secondVal = "); Serial.print(pData->secondVal); Serial.println(";");
+//    Serial.print("  minuteVal = "); Serial.print(pData->minuteVal); Serial.println(";");
+//    Serial.print("  symbol = {"); 
+//    Serial.print(pData->symbol[3]);Serial.print(";");
+//    Serial.print(pData->symbol[2]);Serial.print(";");
+//    Serial.print(pData->symbol[1]);Serial.print(";");
+//    Serial.print(pData->symbol[0]);Serial.println("}");
+//    Serial.println("}");
 }
 void CopyData(CDisplayData* src, CDisplayData* dst)
 {
@@ -42,8 +43,9 @@ void CDisplay::SetString(const byte sym3, const byte sym2, const byte sym1, cons
   _newData.symbol[2] = sym2;
   _newData.symbol[1] = sym1;
   _newData.symbol[0] = sym0;
-  Serial.println("========== SetString ===========");
+  //Serial.println("========== SetString ===========");
   PrintData(&_newData, "NewData");
+  Refresh();
 };
 
 void CDisplay::SetSeconds(const byte value)
@@ -54,14 +56,18 @@ void CDisplay::SetMinutes(const byte value)
 
 void CDisplay::SetTime(const byte valueMin, const byte valueSec, const byte mode)
 {
-  _newData.displayMode = mode;
-  if( (mode == MODE_TIMER_ON) ||
-      (mode == MODE_SET_SECOND) ||
-      (mode == MODE_SET_MINUTE)
-     )
-  {
-    _lastTime = millis();
-    _blinkState = true;
+  if (_currentData.displayMode != mode){
+    _newData.displayMode = mode;
+    if( (mode == MODE_TIMER_ON) ||
+        (mode == MODE_SET_SECOND) ||
+        (mode == MODE_SET_MINUTE) ||
+        (mode == MODE_TIMER_PAUSE)
+       )
+    {
+      _lastTime = millis();
+      _blinkState = true;
+    }
+    //Serial.println("SetTime");
   }
   
   _newData.secondVal = valueSec;
@@ -72,7 +78,16 @@ void CDisplay::SetTime(const byte valueMin, const byte valueSec, const byte mode
   _newData.symbol[1] = ByteToSymbol(_newData.secondVal/10);
   _newData.symbol[0] = ByteToSymbol(_newData.secondVal%10); 
 
-  _newData.symbol[1] &= QD_DOT;
+  //_newData.symbol[1] &= QD_DOT;
+  if (_blinkState)
+  {
+    _newData.symbol[1] &= QD_DOT;
+  } 
+  else 
+  {
+    _newData.symbol[1] |= 0b00000001;
+  }
+  Refresh();
 };
 
 byte CDisplay::ByteToSymbol(const byte source)
@@ -160,6 +175,7 @@ void CDisplay::Exec()
       {
         _lastTime += _period;
         _blinkState = !_blinkState;
+        Serial.println("blink = "+String(_blinkState));
         if (_blinkState)
         {
           _newData.symbol[1] &= QD_DOT;
@@ -171,8 +187,8 @@ void CDisplay::Exec()
       }
       break;
     
-    case MODE_TIMER_PAUSE : break;
+    case MODE_TIMER_PAUSE : 
+      break;
   }
   Refresh();
-
 };
