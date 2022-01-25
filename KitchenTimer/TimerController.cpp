@@ -2,7 +2,7 @@
 
 #define INACTION_DELAY 60000 // 
 
-CTimerController::CTimerController(CDisplay* disp, CEventQueue* queue)
+CTimerController::CTimerController(CDisplay* disp, CEventQueue* queue, CActiveZoomerController* zoomer)
 {
   _display = disp;
   _state = STATE_OFF;
@@ -10,6 +10,7 @@ CTimerController::CTimerController(CDisplay* disp, CEventQueue* queue)
   //_minutes = 0;
   //_seconds = 30;
   _time = 30000; // время таймера в мс
+  _zoomer = zoomer;
 }
 
 void CTimerController::SetStateOFF()
@@ -103,6 +104,10 @@ void CTimerController::IncMinutes(int value)
   _time= _time+(MM-(long)GetMinutes())*60000;
 }
 
+void CTimerController::Beep()
+{
+  _zoomer->Beep();
+}
 
 void CTimerController::Setup()
 {
@@ -216,6 +221,7 @@ void CTimerController::Exec()
       {
         // todo: звуковой сигнал 
         SetStateOFF();
+        Beep();
       }
       else
       {

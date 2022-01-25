@@ -3,6 +3,7 @@
 
 #include "CDisplay.h"
 #include "CEventQueue.h"
+#include "CActiveZoomerController.h"
 
 #define STATE_OFF 0
 #define STATE_SET_SECOND 1
@@ -16,9 +17,8 @@ class CTimerController
     CDisplay* _display;
     byte _state;
     CEventQueue* _eventQueue;
+    CActiveZoomerController* _zoomer;
 
-    //byte _minutes;
-    //byte _seconds;
     long _time;
 
     unsigned long _lastTime;
@@ -31,9 +31,10 @@ class CTimerController
     void SetStateON();
     void IncSeconds(int value);
     void IncMinutes(int value);
+    void Beep();
 
   public:
-    CTimerController(CDisplay* disp, CEventQueue* queue);
+    CTimerController(CDisplay* disp, CEventQueue* queue, CActiveZoomerController* zoomer);
     void Setup();
     void Exec();
     byte GetMinutes();
