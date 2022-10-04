@@ -12,8 +12,8 @@
 #define Encoder_S2_Pin 7
 #define Encoder_Key_Pin 8
 
-#define ButtonOk_Pin 9 
-#define ButtonCansel_Pin 10 
+#define ButtonOk_Pin 10 
+#define ButtonCansel_Pin 9 
 #define Zoomer_Pin 11
 
 CEventQueue gEventQueue;
